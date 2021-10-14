@@ -10,6 +10,7 @@
 - Startkonfigurationen (Normal, Beliebig, ...)
 - Fehler abfangen (Illegale Züge etc.). Zum Beispiel "Bauer bewegt sich zurück" 
   (Erstmal nur, sodass alles funktioniert ohne Fehler abfangen)
+- Bauern werden zu Königinnen, wenn sie in der ersten Reihe des Feindes ankommen.
 '''
 
 '''
@@ -17,7 +18,8 @@ b := black
 w := white
 
 R := Rook
-K := Knight
+K := King
+S := Springer/Knight
 B := Bishop
 Q := Queen
 P := Pawn
@@ -41,20 +43,25 @@ class Board:
 
         if board == None:
             self.board = [
-                ["bR", "bK", "bB", "bQ", "bK", "bB", "bK", "bR"],
+                ["bR", "bS", "bB", "bQ", "bK", "bB", "bS", "bR"],
                 ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
                 [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,],
                 [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,],
                 [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,],
                 [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,],
                 ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
-                ["wR", "wK", "wB", "wQ", "wK", "wB", "wK", "wR"]
+                ["wR", "wS", "wB", "wQ", "wK", "wB", "wS", "wR"]
             ]
         else:
-            if len(board) != 8 or len(board[0] != 8):
+            if len(board) != 8 or len(board[0]) != 8:
                 raise ValueError("Given board has incorrect dimensions. Must be 8x8.")
             else:
                 self.board = board
+
+                # Make sure that the self.emptyPiece character is used.
+                """ for row in range(2, 6):
+                    for col in range(0, 8):
+                        self.board[row][col] = self.emptyPiece """
 
     def get_piece(self, pieceLoc):
         loc = self.traditional_to_array(pieceLoc)
@@ -84,35 +91,91 @@ class Board:
             # remove piece from old location
             self.board[fromLocArray[0]][fromLocArray[1]] = self.emptyPiece
 
-    def validate_move(self, fromLoc, toLoc):
-        # Determine the type of piece that is about to be moved.
-        piece = self.board[fromLoc[0]][fromLoc[1]]
+    def validate_move_pawn(self, fromLoc, toLoc):
+        # Black or white pawn?
+        pawnColor = self.board[fromLoc[0]][fromLoc[1]][0]
 
-        # Determine the possible locations that piece can move to from it's current location.
         possibleLocations = []
 
-        # Is the piece black or white
-        # Black
-        if piece[0] == "b":
-
-            # Pawn
-            if piece[1] == "P":
-                # Is the pawn in it's initial location or has it already been moved?
-                # 1 is the index of the row where all the black pawns start.
-                if fromLoc[0] == 1:
+        # black pawn
+        if pawnColor == "b":
+            # Is the pawn in it's initial location or has it already been moved?
+            # 1 is the index of the row where all the black pawns start.
+            if fromLoc[0] == 1:
+                possibleLocations.append((fromLoc[0] + 1, fromLoc[1]))
+                possibleLocations.append((fromLoc[0] + 2, fromLoc[1]))
+            else:
+                # No enemy piece in front
+                if self.board[fromLoc[0] + 1][fromLoc[1]] == self.emptyPiece:
                     possibleLocations.append((fromLoc[0] + 1, fromLoc[1]))
-                    possibleLocations.append((fromLoc[0] + 2, fromLoc[1]))
+
+                # Enemy pieces diagonally
+                # Pawn hugs left wall
+                if fromLoc[1] == 0:
+                    if "w" in self.board[fromLoc[0] + 1][1]:
+                        possibleLocations.append((fromLoc[0] + 1, 1))
+
+                # Pawn hugs right wall
+                elif fromLoc[1] == 7:
+                    if "w" in self.board[fromLoc[0] + 1][6]:
+                        possibleLocations.append((fromLoc[0] + 1, 6))
+
+                # Pawn doesn't a wall
                 else:
-                    pass
-        # White
-        """ else:
-            pass """
+                    # left diagonal
+                    if "w" in self.board[fromLoc[0] + 1][fromLoc[1] - 1]:
+                        possibleLocations.append((fromLoc[0] + 1, fromLoc[1] - 1))
+                    # right diagonal
+                    if "w" in self.board[fromLoc[0] + 1][fromLoc[1] + 1]:
+                        possibleLocations.append((fromLoc[0] + 1, fromLoc[1] + 1))
 
-        # Is the given location the piece is about to be moved to in these possible locations?
-        if toLoc in possibleLocations: return True
-        else: return False
+        # white pawn    
+        else:
+            # initial pos
+            if fromLoc[0] == 6:
+                possibleLocations.append((fromLoc[0] - 1, fromLoc[1]))
+                possibleLocations.append((fromLoc[0] - 2, fromLoc[1]))
+            else:
+                # no piece in front
+                if self.board[fromLoc[0] - 1][fromLoc[1]] == self.emptyPiece:
+                    possibleLocations.append((fromLoc[0] - 1, fromLoc[1]))
+
+                # enemy pieces diagonally
+                # hugs left wall
+                if fromLoc[1] == 0:
+                    if "b" in self.board[fromLoc[0] - 1][1]:
+                        possibleLocations.append((fromLoc[0] - 1, 1))
+
+                # hugs right wall
+                elif fromLoc[1] == 7:
+                    if "b" in self.board[fromLoc[0] - 1][6]:
+                        possibleLocations.append((fromLoc[0] - 1, 6))
+
+                # doesnt hug wall
+                else:
+                    # left diagonal
+                    if "b" in self.board[fromLoc[0] - 1][fromLoc[1] - 1]:
+                        possibleLocations.append((fromLoc[0] - 1, fromLoc[1] - 1))
+                    # right diagonal
+                    if "b" in self.board[fromLoc[0] - 1][fromLoc[1] + 1]:
+                        possibleLocations.append((fromLoc[0] - 1, fromLoc[1] + 1))
+
+        if toLoc in possibleLocations:
+            return True
+        return False
+
+    def validate_move(self, fromLoc, toLoc):
+        # Determine the type of piece that is about to be moved.
+        pieceType = self.board[fromLoc[0]][fromLoc[1]][1]
+
+        # For each type of piece delegate to a specific sub-method that checks move validity.
+        if pieceType == "R": return self.validate_move_rook(fromLoc, toLoc)
+        elif pieceType == "K": return self.validate_move_king(fromLoc, toLoc)
+        elif pieceType == "S": return self.validate_move_knight(fromLoc, toLoc)
+        elif pieceType == "B": return self.validate_move_bishop(fromLoc, toLoc)
+        elif pieceType == "Q": return self.validate_move_queen(fromLoc, toLoc)
+        elif pieceType == "P": return self.validate_move_pawn(fromLoc, toLoc)
         
-
     def __repr__(self) -> str:
         boardStr = ""
         rowIndex = 8
