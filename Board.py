@@ -91,6 +91,18 @@ class Board:
             # remove piece from old location
             self.board[fromLocArray[0]][fromLocArray[1]] = self.emptyPiece
 
+    def validate_move(self, fromLoc, toLoc):
+        # Determine the type of piece that is about to be moved.
+        pieceType = self.board[fromLoc[0]][fromLoc[1]][1]
+
+        # For each type of piece delegate to a specific sub-method that checks move validity.
+        if pieceType == "R": return self.validate_move_rook(fromLoc, toLoc)
+        elif pieceType == "K": return self.validate_move_king(fromLoc, toLoc)
+        elif pieceType == "S": return self.validate_move_knight(fromLoc, toLoc)
+        elif pieceType == "B": return self.validate_move_bishop(fromLoc, toLoc)
+        elif pieceType == "Q": return self.validate_move_queen(fromLoc, toLoc)
+        elif pieceType == "P": return self.validate_move_pawn(fromLoc, toLoc)
+
     def validate_move_pawn(self, fromLoc, toLoc):
         # Black or white pawn?
         pawnColor = self.board[fromLoc[0]][fromLoc[1]][0]
@@ -163,18 +175,6 @@ class Board:
         if toLoc in possibleLocations:
             return True
         return False
-
-    def validate_move(self, fromLoc, toLoc):
-        # Determine the type of piece that is about to be moved.
-        pieceType = self.board[fromLoc[0]][fromLoc[1]][1]
-
-        # For each type of piece delegate to a specific sub-method that checks move validity.
-        if pieceType == "R": return self.validate_move_rook(fromLoc, toLoc)
-        elif pieceType == "K": return self.validate_move_king(fromLoc, toLoc)
-        elif pieceType == "S": return self.validate_move_knight(fromLoc, toLoc)
-        elif pieceType == "B": return self.validate_move_bishop(fromLoc, toLoc)
-        elif pieceType == "Q": return self.validate_move_queen(fromLoc, toLoc)
-        elif pieceType == "P": return self.validate_move_pawn(fromLoc, toLoc)
         
     def __repr__(self) -> str:
         boardStr = ""
