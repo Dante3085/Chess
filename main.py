@@ -1,19 +1,25 @@
 
 from Board import Board
+import sys, pygame
 
-board = Board(board=[
-    ["bR", "bS", "bB", "bQ", "bK", "bB", "bS", "bR"],
-    ["bP", "bP", "bP", "bP", "||", "bP", "bP", "bP"],
-    ["||", "||", "||", "||", "||", "||", "||", "||",],
-    ["||", "||", "||", "||", "bP", "||", "bP", "||",],
-    ["||", "||", "||", "||", "||", "wP", "||", "||",],
-    ["||", "||", "||", "||", "||", "||", "||", "||",],
-    ["wP", "wP", "wP", "wP", "wP", "||", "wP", "wP"],
-    ["wR", "wS", "wB", "wQ", "wK", "wB", "wS", "wR"]
-])
+board = Board()
 
-print(board)
+screen = pygame.display.set_mode((1280, 720), pygame.RESIZABLE)
 
-board.move_piece("f4", "e5")
+while 1:
+    # check pygame events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                quitEvent = pygame.event.Event(pygame.QUIT, {})
+                pygame.event.post(quitEvent)
+            
+            elif event.key == pygame.K_RETURN:
+                print(board)
 
-print(board)
+    board.update(screen)
+    board.render(screen)
+    
+    # update display surface to screen
+    pygame.display.flip()  
