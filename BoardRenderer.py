@@ -18,6 +18,9 @@ class BoardRenderer:
         self.boardCells = []
         self.boardColor1 = (118,150,86)
         self.boardColor2 = (238,238,210)
+        self.markColor = (255, 0, 0)
+        self.markedCell = (-1, -1)
+        self.possibleMoves = []
 
         self.init_pieces_images()
 
@@ -48,30 +51,30 @@ class BoardRenderer:
     def init_pieces_images(self):
         '''Loads all the images for the chess pieces.'''
 
-        self.originalWhitePawnImage = pygame.image.load("whitePawn.png")
+        self.originalWhitePawnImage = pygame.image.load("pieces/whitePawn.png")
         self.whitePawnImage = self.originalWhitePawnImage
-        self.originalWhiteKingImage = pygame.image.load("whiteKing.png")
+        self.originalWhiteKingImage = pygame.image.load("pieces/whiteKing.png")
         self.whiteKingImage = self.originalWhiteKingImage
-        self.originalWhiteQueenImage = pygame.image.load("whiteQueen.png")
+        self.originalWhiteQueenImage = pygame.image.load("pieces/whiteQueen.png")
         self.whiteQueenImage = self.originalWhiteQueenImage
-        self.originalWhiteRookImage = pygame.image.load("whiteRook.png")
+        self.originalWhiteRookImage = pygame.image.load("pieces/whiteRook.png")
         self.whiteRookImage = self.originalWhiteRookImage
-        self.originalWhiteBishopImage = pygame.image.load("whiteBishop.png")
+        self.originalWhiteBishopImage = pygame.image.load("pieces/whiteBishop.png")
         self.whiteBishopImage = self.originalWhiteBishopImage
-        self.originalWhiteKnightImage = pygame.image.load("whiteKnight.png")
+        self.originalWhiteKnightImage = pygame.image.load("pieces/whiteKnight.png")
         self.whiteKnightImage = self.originalWhiteKnightImage
 
-        self.originalBlackPawnImage = pygame.image.load("blackPawn.png")
+        self.originalBlackPawnImage = pygame.image.load("pieces/blackPawn.png")
         self.blackPawnImage = self.originalBlackPawnImage
-        self.originalBlackKingImage = pygame.image.load("blackKing.png")
+        self.originalBlackKingImage = pygame.image.load("pieces/blackKing.png")
         self.blackKingImage = self.originalBlackKingImage
-        self.originalBlackQueenImage = pygame.image.load("blackQueen.png")
+        self.originalBlackQueenImage = pygame.image.load("pieces/blackQueen.png")
         self.blackQueenImage = self.originalBlackQueenImage
-        self.originalBlackRookImage = pygame.image.load("blackRook.png")
+        self.originalBlackRookImage = pygame.image.load("pieces/blackRook.png")
         self.blackRookImage = self.originalBlackRookImage
-        self.originalBlackBishopImage = pygame.image.load("blackBishop.png")
+        self.originalBlackBishopImage = pygame.image.load("pieces/blackBishop.png")
         self.blackBishopImage = self.originalBlackBishopImage
-        self.originalBlackKnightImage = pygame.image.load("blackKnight.png")
+        self.originalBlackKnightImage = pygame.image.load("pieces/blackKnight.png")
         self.blackKnightImage = self.originalWhiteKnightImage
 
     def update(self, screen):
@@ -82,7 +85,17 @@ class BoardRenderer:
         boardPosition = (marginSize, 0)
 
         self.update_board_cells(cellSize, marginSize, boardPosition)
-        self.update_chess_pieces(cellSize) 
+        self.update_chess_pieces(cellSize)
+        self.update_mark_possible_moves()
+
+    def update_mark_possible_moves(self):
+        # if the marked cell has a piece in it, show the possible moves that it can make.
+        if (self.markedCell != (-1, -1) and 
+            self.logicalBoard.get_piece_array(self.markedCell[0], self.markedCell[1]) != self.logicalBoard.emptyPiece):
+            self.possibleMoves = self.logicalBoard.get_possible_moves((self.markedCell[0], self.markedCell[1]))
+        else:
+            self.possibleMoves = []
+
 
     def update_board_cells(self, cellSize, marginSize, boardPosition):
         self.boardCells = []
@@ -119,6 +132,17 @@ class BoardRenderer:
         self.render_board(screen)
         self.render_text(screen, cellSize, marginSize, boardPosition)
         self.render_pieces(screen, cellSize, boardPosition)
+        self.render_possible_moves(screen, cellSize)
+
+    def mark_cell(self, row, col):
+        self.markedCell = (row, col)
+
+    def render_possible_moves(self, screen, cellSize):
+        if len(self.possibleMoves) > 0:
+            circleRadius = math.sqrt((0.05*pow(cellSize, 2)) / math.pi)
+            for possibleMove in self.possibleMoves:
+                pygame.draw.circle(screen, (180,160,130), self.boardCells[possibleMove[0]][possibleMove[1]].center, 
+                                   radius=circleRadius)
 
     def render_pieces(self, screen, cellSize, boardPosition):
         '''Renders the chess pieces on to the chess board.'''
@@ -157,7 +181,10 @@ class BoardRenderer:
 
         for row in range(0, 8):
             for col in range(0, 8):
-                pygame.draw.rect(screen, self.boardColor1 if (row+col) % 2 == 0 else self.boardColor2,
+                if (row, col) == self.markedCell:
+                    pygame.draw.rect(screen, self.markColor, self.boardCells[row][col])
+                else:
+                    pygame.draw.rect(screen, self.boardColor1 if (row+col) % 2 == 0 else self.boardColor2,
                                  self.boardCells[row][col])
 
     def render_text(self, screen, cellSize, marginSize, boardPosition):

@@ -103,9 +103,18 @@ class LogicalBoard:
         elif pieceType == "S": return self.validate_move_knight(fromLoc, toLoc)
         elif pieceType == "B": return self.validate_move_bishop(fromLoc, toLoc)
         elif pieceType == "Q": return self.validate_move_queen(fromLoc, toLoc)
-        elif pieceType == "P": return self.validate_move_pawn(fromLoc, toLoc)
+        elif pieceType == "P": return toLoc in self.get_possible_moves_pawn(fromLoc)
 
-    def validate_move_pawn(self, fromLoc, toLoc):
+    def get_possible_moves(self, position):
+        piece = self.board[position[0]][position[1]]
+        if "R" in piece: pass
+        elif "K" in piece: pass
+        elif "S" in piece: pass
+        elif "B" in piece: pass
+        elif "Q" in piece: pass
+        elif "P" in piece: return self.get_possible_moves_pawn(position)
+
+    def get_possible_moves_pawn(self, fromLoc):
         # Black or white pawn?
         pawnColor = self.board[fromLoc[0]][fromLoc[1]][0]
 
@@ -174,9 +183,7 @@ class LogicalBoard:
                     if "b" in self.board[fromLoc[0] - 1][fromLoc[1] + 1]:
                         possibleLocations.append((fromLoc[0] - 1, fromLoc[1] + 1))
 
-        if toLoc in possibleLocations:
-            return True
-        return False
+        return possibleLocations
         
     def __repr__(self) -> str:
         boardStr = ""
