@@ -5,6 +5,7 @@ Folgende Stichworte:
 - Game-Loop
 - Fenstersystem (Worauf soll gerendert werden?)
 - Board als Bild oder einzelne Rectangles?
+- TODO: Schrift relativ zur Bildschirmgröße.
 '''
 
 import pygame
@@ -141,7 +142,7 @@ class BoardRenderer:
         if len(self.possibleMoves) > 0:
             circleRadius = math.sqrt((0.05*pow(cellSize, 2)) / math.pi)
             for possibleMove in self.possibleMoves:
-                pygame.draw.circle(screen, (180,160,130), self.boardCells[possibleMove[0]][possibleMove[1]].center, 
+                pygame.draw.circle(screen, (0, 255, 0), self.boardCells[possibleMove[0]][possibleMove[1]].center, 
                                    radius=circleRadius)
 
     def render_pieces(self, screen, cellSize, boardPosition):

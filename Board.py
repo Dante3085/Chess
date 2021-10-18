@@ -5,7 +5,16 @@ from BoardInteractor import BoardInteractor
 
 class Board:
     def __init__(self):
-        self.logicalBoard = LogicalBoard()
+        self.logicalBoard = LogicalBoard(board=[
+                ["bR", "bS", "bB", "bQ", "bK", "bB", "bS", "bR"],
+                ["bP", "bP", "bP", "bP", "||", "||", "bP", "bP"],
+                ["||", "||", "||", "||", "||", "||", "||", "||",],
+                ["||", "||", "||", "||", "||", "bP", "||", "||",],
+                ["||", "||", "||", "||", "||", "||", "wP", "||",],
+                ["||", "||", "||", "||", "bP", "||", "||", "||",],
+                ["wP", "wP", "wP", "wP", "wP", "wP", "||", "wP"],
+                ["wR", "wS", "wB", "wQ", "wK", "wB", "wS", "wR"]
+        ])
         self.boardRenderer = BoardRenderer(self.logicalBoard)
         self.boardInteractor = BoardInteractor(self.boardRenderer)
 

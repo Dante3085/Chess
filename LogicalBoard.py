@@ -25,6 +25,7 @@ Q := Queen
 P := Pawn
 '''
 
+
 class LogicalBoard:
     def __init__(self, board=None) -> None:
         self.letterToColumn = {
@@ -45,16 +46,21 @@ class LogicalBoard:
             self.board = [
                 ["bR", "bS", "bB", "bQ", "bK", "bB", "bS", "bR"],
                 ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
-                [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,],
-                [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,],
-                [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,],
-                [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,],
+                [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,
+                    self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
+                [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,
+                    self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
+                [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,
+                    self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
+                [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,
+                    self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
                 ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
                 ["wR", "wS", "wB", "wQ", "wK", "wB", "wS", "wR"]
             ]
         else:
             if len(board) != 8 or len(board[0]) != 8:
-                raise ValueError("Given board has incorrect dimensions. Must be 8x8.")
+                raise ValueError(
+                    "Given board has incorrect dimensions. Must be 8x8.")
             else:
                 self.board = board
 
@@ -77,20 +83,22 @@ class LogicalBoard:
         col = self.letterToColumn[trad[0]]
         row = 8 - int(trad[1])
         return (row, col)
-    
+
     def move_piece(self, fromLoc, toLoc):
         fromLocArray = self.traditional_to_array(fromLoc)
         toLocArray = self.traditional_to_array(toLoc)
 
         if (not self.validate_move(fromLocArray, toLocArray)):
-            raise ValueError("Given move '" + fromLoc + " -> " + toLoc + "' is unvalid.")
+            raise ValueError("Given move '" + fromLoc +
+                             " -> " + toLoc + "' is unvalid.")
         else:
             # move piece to new location
-            self.board[toLocArray[0]][toLocArray[1]] = self.board[fromLocArray[0]][fromLocArray[1]]
+            self.board[toLocArray[0]][toLocArray[1]
+                                      ] = self.board[fromLocArray[0]][fromLocArray[1]]
 
             # remove piece from old location
             self.board[fromLocArray[0]][fromLocArray[1]] = self.emptyPiece
-        
+
         return fromLoc + " -> " + toLoc
 
     def validate_move(self, fromLoc, toLoc):
@@ -98,21 +106,33 @@ class LogicalBoard:
         pieceType = self.board[fromLoc[0]][fromLoc[1]][1]
 
         # For each type of piece delegate to a specific sub-method that checks move validity.
-        if pieceType == "R": return self.validate_move_rook(fromLoc, toLoc)
-        elif pieceType == "K": return self.validate_move_king(fromLoc, toLoc)
-        elif pieceType == "S": return self.validate_move_knight(fromLoc, toLoc)
-        elif pieceType == "B": return self.validate_move_bishop(fromLoc, toLoc)
-        elif pieceType == "Q": return self.validate_move_queen(fromLoc, toLoc)
-        elif pieceType == "P": return toLoc in self.get_possible_moves_pawn(fromLoc)
+        if pieceType == "R":
+            return self.validate_move_rook(fromLoc, toLoc)
+        elif pieceType == "K":
+            return self.validate_move_king(fromLoc, toLoc)
+        elif pieceType == "S":
+            return self.validate_move_knight(fromLoc, toLoc)
+        elif pieceType == "B":
+            return self.validate_move_bishop(fromLoc, toLoc)
+        elif pieceType == "Q":
+            return self.validate_move_queen(fromLoc, toLoc)
+        elif pieceType == "P":
+            return toLoc in self.get_possible_moves_pawn(fromLoc)
 
     def get_possible_moves(self, position):
         piece = self.board[position[0]][position[1]]
-        if "R" in piece: pass
-        elif "K" in piece: pass
-        elif "S" in piece: pass
-        elif "B" in piece: pass
-        elif "Q" in piece: pass
-        elif "P" in piece: return self.get_possible_moves_pawn(position)
+        if "R" in piece:
+            return []
+        elif "K" in piece:
+            return []
+        elif "S" in piece:
+            return []
+        elif "B" in piece:
+            return []
+        elif "Q" in piece:
+            return []
+        elif "P" in piece:
+            return self.get_possible_moves_pawn(position)
 
     def get_possible_moves_pawn(self, fromLoc):
         # Black or white pawn?
@@ -122,69 +142,71 @@ class LogicalBoard:
 
         # black pawn
         if pawnColor == "b":
-            # Is the pawn in it's initial location or has it already been moved?
-            # 1 is the index of the row where all the black pawns start.
-            if fromLoc[0] == 1:
+            # No enemy piece in front
+            if self.board[fromLoc[0] + 1][fromLoc[1]] == self.emptyPiece:
                 possibleLocations.append((fromLoc[0] + 1, fromLoc[1]))
-                possibleLocations.append((fromLoc[0] + 2, fromLoc[1]))
+
+                # Is the pawn in it's initial location or has it already been moved?
+                # 1 is the index of the row where all the black pawns start.
+                if fromLoc[0] == 1:
+                    possibleLocations.append((fromLoc[0] + 2, fromLoc[1]))
+
+            # Enemy pieces diagonally
+            # Pawn hugs left wall
+            if fromLoc[1] == 0:
+                if "w" in self.board[fromLoc[0] + 1][1]:
+                    possibleLocations.append((fromLoc[0] + 1, 1))
+
+            # Pawn hugs right wall
+            elif fromLoc[1] == 7:
+                if "w" in self.board[fromLoc[0] + 1][6]:
+                    possibleLocations.append((fromLoc[0] + 1, 6))
+
+            # Pawn doesn't hug a wall
             else:
-                # No enemy piece in front
-                if self.board[fromLoc[0] + 1][fromLoc[1]] == self.emptyPiece:
-                    possibleLocations.append((fromLoc[0] + 1, fromLoc[1]))
+                # left diagonal
+                if "w" in self.board[fromLoc[0] + 1][fromLoc[1] - 1]:
+                    possibleLocations.append(
+                        (fromLoc[0] + 1, fromLoc[1] - 1))
+                # right diagonal
+                if "w" in self.board[fromLoc[0] + 1][fromLoc[1] + 1]:
+                    possibleLocations.append(
+                        (fromLoc[0] + 1, fromLoc[1] + 1))
 
-                # Enemy pieces diagonally
-                # Pawn hugs left wall
-                if fromLoc[1] == 0:
-                    if "w" in self.board[fromLoc[0] + 1][1]:
-                        possibleLocations.append((fromLoc[0] + 1, 1))
-
-                # Pawn hugs right wall
-                elif fromLoc[1] == 7:
-                    if "w" in self.board[fromLoc[0] + 1][6]:
-                        possibleLocations.append((fromLoc[0] + 1, 6))
-
-                # Pawn doesn't a wall
-                else:
-                    # left diagonal
-                    if "w" in self.board[fromLoc[0] + 1][fromLoc[1] - 1]:
-                        possibleLocations.append((fromLoc[0] + 1, fromLoc[1] - 1))
-                    # right diagonal
-                    if "w" in self.board[fromLoc[0] + 1][fromLoc[1] + 1]:
-                        possibleLocations.append((fromLoc[0] + 1, fromLoc[1] + 1))
-
-        # white pawn    
+        # white pawn
         else:
-            # initial pos
-            if fromLoc[0] == 6:
+            # no piece in front
+            if self.board[fromLoc[0] - 1][fromLoc[1]] == self.emptyPiece:
                 possibleLocations.append((fromLoc[0] - 1, fromLoc[1]))
-                possibleLocations.append((fromLoc[0] - 2, fromLoc[1]))
+
+                # initial pos
+                if fromLoc[0] == 6:
+                    possibleLocations.append((fromLoc[0] - 2, fromLoc[1]))
+
+            # enemy pieces diagonally
+            # hugs left wall
+            if fromLoc[1] == 0:
+                if "b" in self.board[fromLoc[0] - 1][1]:
+                    possibleLocations.append((fromLoc[0] - 1, 1))
+
+            # hugs right wall
+            elif fromLoc[1] == 7:
+                if "b" in self.board[fromLoc[0] - 1][6]:
+                    possibleLocations.append((fromLoc[0] - 1, 6))
+
+            # doesnt hug wall
             else:
-                # no piece in front
-                if self.board[fromLoc[0] - 1][fromLoc[1]] == self.emptyPiece:
-                    possibleLocations.append((fromLoc[0] - 1, fromLoc[1]))
-
-                # enemy pieces diagonally
-                # hugs left wall
-                if fromLoc[1] == 0:
-                    if "b" in self.board[fromLoc[0] - 1][1]:
-                        possibleLocations.append((fromLoc[0] - 1, 1))
-
-                # hugs right wall
-                elif fromLoc[1] == 7:
-                    if "b" in self.board[fromLoc[0] - 1][6]:
-                        possibleLocations.append((fromLoc[0] - 1, 6))
-
-                # doesnt hug wall
-                else:
-                    # left diagonal
-                    if "b" in self.board[fromLoc[0] - 1][fromLoc[1] - 1]:
-                        possibleLocations.append((fromLoc[0] - 1, fromLoc[1] - 1))
-                    # right diagonal
-                    if "b" in self.board[fromLoc[0] - 1][fromLoc[1] + 1]:
-                        possibleLocations.append((fromLoc[0] - 1, fromLoc[1] + 1))
+                # left diagonal
+                if "b" in self.board[fromLoc[0] - 1][fromLoc[1] - 1]:
+                    possibleLocations.append(
+                        (fromLoc[0] - 1, fromLoc[1] - 1))
+                # right diagonal
+                if "b" in self.board[fromLoc[0] - 1][fromLoc[1] + 1]:
+                    possibleLocations.append(
+                        (fromLoc[0] - 1, fromLoc[1] + 1))
 
         return possibleLocations
-        
+
     def __repr__(self) -> str:
         boardStr = ""
         rowIndex = 8
