@@ -24,7 +24,7 @@ class BoardRenderer:
         self.boardCells = []
         self.boardColor1 = (118,150,86)
         self.boardColor2 = (238,238,210)
-        self.markColor = (255, 0, 0)
+        self.markColor = (0, 0, 255)
         self.markedCell = (-1, -1)
         self.possibleMoves = []
         self.pieces = []
