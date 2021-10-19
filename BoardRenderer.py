@@ -40,23 +40,27 @@ class BoardRenderer:
         fontSize = math.floor(math.sqrt(0.1 * pow(cellSize, 2)))
         self.myFont = pygame.font.SysFont("Times New Roman", fontSize)
 
-        self.text_1 = self.myFont.render("1", True, self.textColor)
-        self.text_2 = self.myFont.render("2", True, self.textColor)
-        self.text_3 = self.myFont.render("3", True, self.textColor)
-        self.text_4 = self.myFont.render("4", True, self.textColor)
-        self.text_5 = self.myFont.render("5", True, self.textColor)
-        self.text_6 = self.myFont.render("6", True, self.textColor)
-        self.text_7 = self.myFont.render("7", True, self.textColor)
-        self.text_8 = self.myFont.render("8", True, self.textColor)
+        self.numberTexts = [
+            self.myFont.render("1", True, self.textColor),
+            self.myFont.render("2", True, self.textColor),
+            self.myFont.render("3", True, self.textColor),
+            self.myFont.render("4", True, self.textColor),
+            self.myFont.render("5", True, self.textColor),
+            self.myFont.render("6", True, self.textColor),
+            self.myFont.render("7", True, self.textColor),
+            self.myFont.render("8", True, self.textColor)
+        ]
 
-        self.text_a = self.myFont.render("a", True, self.textColor)
-        self.text_b = self.myFont.render("b", True, self.textColor)
-        self.text_c = self.myFont.render("c", True, self.textColor)
-        self.text_d = self.myFont.render("d", True, self.textColor)
-        self.text_e = self.myFont.render("e", True, self.textColor)
-        self.text_f = self.myFont.render("f", True, self.textColor)
-        self.text_g = self.myFont.render("g", True, self.textColor)
-        self.text_h = self.myFont.render("h", True, self.textColor)
+        self.letterTexts = [
+            self.myFont.render("a", True, self.textColor),
+            self.myFont.render("b", True, self.textColor),
+            self.myFont.render("c", True, self.textColor),
+            self.myFont.render("d", True, self.textColor),
+            self.myFont.render("e", True, self.textColor),
+            self.myFont.render("f", True, self.textColor),
+            self.myFont.render("g", True, self.textColor),
+            self.myFont.render("h", True, self.textColor)
+        ]
 
     def init_pieces(self):
         '''Loads all the images for the chess pieces.'''
@@ -219,7 +223,23 @@ class BoardRenderer:
     def render_text(self, screen, cellSize, marginSize, boardPosition):
         '''Renders the chess board numbers and letters on to the chess board.'''
 
-        screen.blit(self.text_1, dest=self.add_tuples(boardPosition, (10, 0)), area=self.text_1.get_rect())
+        # numbers
+        for row in range(0, 8):
+            currentCell = self.boardCells[row][0]
+            currentText = self.numberTexts[row]
+            textPos = (currentCell.left + 0.1 * currentCell.width,
+                       currentCell.top  + 0.1 * currentCell.height)
+            screen.blit(currentText, dest=textPos, area=currentText.get_rect())
+
+        # letters
+        for col in range(0, 8):
+            currentCell = self.boardCells[7][col]
+            currentText = self.letterTexts[col]
+            textPos = (currentCell.right - 0.2 * currentCell.width,
+                       currentCell.bottom - 0.4 * currentCell.height)
+            screen.blit(currentText, dest=textPos, area=currentText.get_rect())
+
+        """ screen.blit(self.text_1, dest=self.add_tuples(boardPosition, (10, 0)), area=self.text_1.get_rect())
         screen.blit(self.text_2, dest=self.add_tuples(boardPosition, (10, cellSize)), area=self.text_2.get_rect())
         screen.blit(self.text_3, dest=self.add_tuples(boardPosition, (10, 2*cellSize)), area=self.text_3.get_rect())
         screen.blit(self.text_4, dest=self.add_tuples(boardPosition, (10, 3*cellSize)), area=self.text_4.get_rect())
@@ -237,7 +257,7 @@ class BoardRenderer:
         screen.blit(self.text_e, dest=self.add_tuples(boardPosition, (5*cellSize - 20, yLetters)), area=self.text_e.get_rect())
         screen.blit(self.text_f, dest=self.add_tuples(boardPosition, (6*cellSize - 20, yLetters)), area=self.text_f.get_rect())
         screen.blit(self.text_g, dest=self.add_tuples(boardPosition, (7*cellSize - 20, yLetters)), area=self.text_g.get_rect())
-        screen.blit(self.text_h, dest=self.add_tuples(boardPosition, (8*cellSize - 20, yLetters)), area=self.text_h.get_rect())
+        screen.blit(self.text_h, dest=self.add_tuples(boardPosition, (8*cellSize - 20, yLetters)), area=self.text_h.get_rect()) """
 
     def add_tuples(self, tuple1, tuple2):
         tupleAsList = list(tuple1)
