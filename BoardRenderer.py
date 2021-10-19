@@ -11,11 +11,6 @@ Folgende Stichworte:
 import pygame
 import math
 
-class Piece:
-    def __init__(self, image, pos=(0, 0)):
-        self.pos = pos
-        self.image = image
-
 class BoardRenderer:
     def __init__(self, logicalBoard) -> None:
 
@@ -27,8 +22,8 @@ class BoardRenderer:
         self.markColor = (0, 0, 255)
         self.markedCell = (-1, -1)
         self.possibleMoves = []
-        self.pieces = []
-        self.movingPiece = None
+        self.cellPieceToMove = (-1, -1)
+        self.mousePos = (-1, -1)
 
         self.init_pieces()
 
@@ -111,7 +106,6 @@ class BoardRenderer:
         else:
             self.possibleMoves = []
 
-
     def update_board_cells(self, cellSize, marginSize, boardPosition):
         self.boardCells = []
         for row in range(0, 8):
@@ -149,27 +143,6 @@ class BoardRenderer:
         self.render_pieces(screen, cellSize, boardPosition)
         self.render_possible_moves(screen, cellSize)
 
-    def mark_cell(self, row, col):
-        self.markedCell = (row, col)
-
-    """ def move_piece(self, row, col, newPos):
-        cell = self.boardCells[row][col]
-
-        if self.movingPiece == None:
-            for piece in self.pieces:
-                if piece.pos == cell.topleft:
-                    self.movingPiece = piece
-                    break """
-
-    """ def stop_moving_piece(self):
-        self.movingPiece = None """
-
-    def get_marked_cell(self):
-        if self.markedCell == (-1, -1):
-            return None
-        else:
-            return self.boardCells[self.markedCell[0]][self.markedCell[1]]
-
     def render_possible_moves(self, screen, cellSize):
         if len(self.possibleMoves) > 0:
             circleRadius = math.sqrt((0.05*pow(cellSize, 2)) / math.pi)
@@ -183,31 +156,38 @@ class BoardRenderer:
         for row in range(0, 8):
             for col in range(0, 8):
                 currentPiece = self.logicalBoard.board[row][col]
+
+                destination = (-1, -1)
+                if self.cellPieceToMove == (row, col):
+                    destination = self.mousePos
+                else:
+                    destination = self.boardCells[row][col].topleft
+
                 if currentPiece == "wP":
-                    screen.blit(self.whitePawnImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.whitePawnImage, dest=destination)
                 elif currentPiece == "wK":
-                    screen.blit(self.whiteKingImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.whiteKingImage, dest=destination)
                 elif currentPiece == "wR":
-                    screen.blit(self.whiteRookImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.whiteRookImage, dest=destination)
                 elif currentPiece == "wS":
-                    screen.blit(self.whiteKnightImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.whiteKnightImage, dest=destination)
                 elif currentPiece == "wB":
-                    screen.blit(self.whiteBishopImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.whiteBishopImage, dest=destination)
                 elif currentPiece == "wQ":
-                    screen.blit(self.whiteQueenImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.whiteQueenImage, dest=destination)
                 
                 elif currentPiece == "bP":
-                    screen.blit(self.blackPawnImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.blackPawnImage, dest=destination)
                 elif currentPiece == "bK":
-                    screen.blit(self.blackKingImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.blackKingImage, dest=destination)
                 elif currentPiece == "bR":
-                    screen.blit(self.blackRookImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.blackRookImage, dest=destination)
                 elif currentPiece == "bS":
-                    screen.blit(self.blackKnightImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.blackKnightImage, dest=destination)
                 elif currentPiece == "bB":
-                    screen.blit(self.blackBishopImage, dest=self.boardCells[row][col].topleft)
+                    screen.blit(self.blackBishopImage, dest=destination)
                 elif currentPiece == "bQ":
-                    screen.blit(self.blackQueenImage, dest=self.boardCells[row][col].topleft) 
+                    screen.blit(self.blackQueenImage, dest=destination) 
 
     def render_board(self, screen):
         '''Renders the chess board on to the screen.'''
@@ -238,3 +218,15 @@ class BoardRenderer:
             textPos = (currentCell.right - 0.2 * currentCell.width,
                        currentCell.bottom - 0.4 * currentCell.height)
             screen.blit(currentText, dest=textPos, area=currentText.get_rect())
+
+    def cell_is_empty(self, row, col):
+        return self.logicalBoard.board[row][col] == self.logicalBoard.emptyPiece
+
+    def move_piece(self, cellPos, mousePos):
+        '''Moves the piece at the given cell to the given position.'''
+        self.cellPieceToMove = cellPos
+        self.mousePos = mousePos
+
+    def get_cell_size(self):
+        '''Returns the side length every board's cell.'''
+        return self.boardCells[0][0].size[0]
