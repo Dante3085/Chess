@@ -238,29 +238,3 @@ class BoardRenderer:
             textPos = (currentCell.right - 0.2 * currentCell.width,
                        currentCell.bottom - 0.4 * currentCell.height)
             screen.blit(currentText, dest=textPos, area=currentText.get_rect())
-
-        """ screen.blit(self.text_1, dest=self.add_tuples(boardPosition, (10, 0)), area=self.text_1.get_rect())
-        screen.blit(self.text_2, dest=self.add_tuples(boardPosition, (10, cellSize)), area=self.text_2.get_rect())
-        screen.blit(self.text_3, dest=self.add_tuples(boardPosition, (10, 2*cellSize)), area=self.text_3.get_rect())
-        screen.blit(self.text_4, dest=self.add_tuples(boardPosition, (10, 3*cellSize)), area=self.text_4.get_rect())
-        screen.blit(self.text_5, dest=self.add_tuples(boardPosition, (10, 4*cellSize)), area=self.text_5.get_rect())
-        screen.blit(self.text_6, dest=self.add_tuples(boardPosition, (10, 5*cellSize)), area=self.text_6.get_rect())
-        screen.blit(self.text_7, dest=self.add_tuples(boardPosition, (10, 6*cellSize)), area=self.text_7.get_rect())
-        screen.blit(self.text_8, dest=self.add_tuples(boardPosition, (10, 7*cellSize)), area=self.text_8.get_rect())
-
-        yLetters = screen.get_height() - 30
-
-        screen.blit(self.text_a, dest=self.add_tuples(boardPosition, (1*cellSize - 20, yLetters)), area=self.text_a.get_rect())
-        screen.blit(self.text_b, dest=self.add_tuples(boardPosition, (2*cellSize - 20, yLetters)), area=self.text_b.get_rect())
-        screen.blit(self.text_c, dest=self.add_tuples(boardPosition, (3*cellSize - 20, yLetters)), area=self.text_c.get_rect())
-        screen.blit(self.text_d, dest=self.add_tuples(boardPosition, (4*cellSize - 20, yLetters)), area=self.text_d.get_rect())
-        screen.blit(self.text_e, dest=self.add_tuples(boardPosition, (5*cellSize - 20, yLetters)), area=self.text_e.get_rect())
-        screen.blit(self.text_f, dest=self.add_tuples(boardPosition, (6*cellSize - 20, yLetters)), area=self.text_f.get_rect())
-        screen.blit(self.text_g, dest=self.add_tuples(boardPosition, (7*cellSize - 20, yLetters)), area=self.text_g.get_rect())
-        screen.blit(self.text_h, dest=self.add_tuples(boardPosition, (8*cellSize - 20, yLetters)), area=self.text_h.get_rect()) """
-
-    def add_tuples(self, tuple1, tuple2):
-        tupleAsList = list(tuple1)
-        for i in range(0, len(tuple1)):
-            tupleAsList[i] += tuple2[i]
-        return tuple(tupleAsList)
