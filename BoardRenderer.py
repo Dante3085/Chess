@@ -11,6 +11,11 @@ Folgende Stichworte:
 import pygame
 import math
 
+class Piece:
+    def __init__(self, image, pos=(0, 0)):
+        self.pos = pos
+        self.image = image
+
 class BoardRenderer:
     def __init__(self, logicalBoard) -> None:
 
@@ -22,36 +27,40 @@ class BoardRenderer:
         self.markColor = (255, 0, 0)
         self.markedCell = (-1, -1)
         self.possibleMoves = []
+        self.pieces = []
+        self.movingPiece = None
 
-        self.init_pieces_images()
+        self.init_pieces()
 
         # font stuff
         pygame.font.init()
-        myFont = pygame.font.SysFont("Times New Roman", 25)
-
         self.textColor = (255, 0, 0)
 
-        self.text_1 = myFont.render("1", True, self.textColor)
-        self.text_2 = myFont.render("2", True, self.textColor)
-        self.text_3 = myFont.render("3", True, self.textColor)
-        self.text_4 = myFont.render("4", True, self.textColor)
-        self.text_5 = myFont.render("5", True, self.textColor)
-        self.text_6 = myFont.render("6", True, self.textColor)
-        self.text_7 = myFont.render("7", True, self.textColor)
-        self.text_8 = myFont.render("8", True, self.textColor)
+    def update_text(self, cellSize):
+        fontSize = math.floor(math.sqrt(0.1 * pow(cellSize, 2)))
+        self.myFont = pygame.font.SysFont("Times New Roman", fontSize)
 
-        self.text_a = myFont.render("a", True, self.textColor)
-        self.text_b = myFont.render("b", True, self.textColor)
-        self.text_c = myFont.render("c", True, self.textColor)
-        self.text_d = myFont.render("d", True, self.textColor)
-        self.text_e = myFont.render("e", True, self.textColor)
-        self.text_f = myFont.render("f", True, self.textColor)
-        self.text_g = myFont.render("g", True, self.textColor)
-        self.text_h = myFont.render("h", True, self.textColor)
+        self.text_1 = self.myFont.render("1", True, self.textColor)
+        self.text_2 = self.myFont.render("2", True, self.textColor)
+        self.text_3 = self.myFont.render("3", True, self.textColor)
+        self.text_4 = self.myFont.render("4", True, self.textColor)
+        self.text_5 = self.myFont.render("5", True, self.textColor)
+        self.text_6 = self.myFont.render("6", True, self.textColor)
+        self.text_7 = self.myFont.render("7", True, self.textColor)
+        self.text_8 = self.myFont.render("8", True, self.textColor)
 
-    def init_pieces_images(self):
+        self.text_a = self.myFont.render("a", True, self.textColor)
+        self.text_b = self.myFont.render("b", True, self.textColor)
+        self.text_c = self.myFont.render("c", True, self.textColor)
+        self.text_d = self.myFont.render("d", True, self.textColor)
+        self.text_e = self.myFont.render("e", True, self.textColor)
+        self.text_f = self.myFont.render("f", True, self.textColor)
+        self.text_g = self.myFont.render("g", True, self.textColor)
+        self.text_h = self.myFont.render("h", True, self.textColor)
+
+    def init_pieces(self):
         '''Loads all the images for the chess pieces.'''
-
+        
         self.originalWhitePawnImage = pygame.image.load("pieces/whitePawn.png")
         self.whitePawnImage = self.originalWhitePawnImage
         self.originalWhiteKingImage = pygame.image.load("pieces/whiteKing.png")
@@ -85,6 +94,7 @@ class BoardRenderer:
         marginSize = (screen.get_width() - screen.get_height()) / 2
         boardPosition = (marginSize, 0)
 
+        self.update_text(cellSize)
         self.update_board_cells(cellSize, marginSize, boardPosition)
         self.update_chess_pieces(cellSize)
         self.update_mark_possible_moves()
@@ -137,6 +147,24 @@ class BoardRenderer:
 
     def mark_cell(self, row, col):
         self.markedCell = (row, col)
+
+    """ def move_piece(self, row, col, newPos):
+        cell = self.boardCells[row][col]
+
+        if self.movingPiece == None:
+            for piece in self.pieces:
+                if piece.pos == cell.topleft:
+                    self.movingPiece = piece
+                    break """
+
+    """ def stop_moving_piece(self):
+        self.movingPiece = None """
+
+    def get_marked_cell(self):
+        if self.markedCell == (-1, -1):
+            return None
+        else:
+            return self.boardCells[self.markedCell[0]][self.markedCell[1]]
 
     def render_possible_moves(self, screen, cellSize):
         if len(self.possibleMoves) > 0:
