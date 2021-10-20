@@ -6,6 +6,7 @@ class BoardInteractor:
         self.boardRenderer = boardRenderer
         self.leftMousePressed = False
         self.previousLeftMousePressed = False
+        self.markedCellOnMove = None
         
         self.cellPieceToMove = None
 
@@ -31,6 +32,7 @@ class BoardInteractor:
         # be moved is on.
         if self.on_left_mouse_pressed():
             markedCell = self.boardRenderer.markedCell
+            self.markedCellOnMove = markedCell
 
             # if that cell has a piece on it, remember that as being the piece
             # that should be moved.
@@ -38,9 +40,15 @@ class BoardInteractor:
                 self.cellPieceToMove = markedCell
 
         # stop moving the piece when the left mouse button is released and
-        # put it to it's new cell
+        # put it to the current marked cell (the new location) if that move
+        # is possible. Otherwise put the piece back to it's original location.
         elif self.on_left_mouse_released():
-            # self.boardRenderer.move_piece(, mousePos)
+            markedCellOnMouseRelease = self.boardRenderer.markedCell
+            if markedCellOnMouseRelease in self.boardRenderer.logicalBoard.get_possible_moves(self.markedCellOnMove):
+                self.boardRenderer.logicalBoard.move_piece_array(self.markedCellOnMove, markedCellOnMouseRelease)
+            else:
+                self.boardRenderer.move_piece(self.cellPieceToMove,
+                                                   self.boardRenderer.boardCells[self.markedCellOnMove[0]][self.markedCellOnMove[1]])
             self.cellPieceToMove = None
 
         # if there is a piece to move, move it to the position of the mouse cursor.

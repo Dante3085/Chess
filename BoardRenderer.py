@@ -222,10 +222,10 @@ class BoardRenderer:
     def cell_is_empty(self, row, col):
         return self.logicalBoard.board[row][col] == self.logicalBoard.emptyPiece
 
-    def move_piece(self, cellPos, mousePos):
+    def move_piece(self, fromCell, toPosition):
         '''Moves the piece at the given cell to the given position.'''
-        self.cellPieceToMove = cellPos
-        self.mousePos = mousePos
+        self.cellPieceToMove = fromCell
+        self.mousePos = toPosition
 
     def get_cell_size(self):
         '''Returns the side length every board's cell.'''

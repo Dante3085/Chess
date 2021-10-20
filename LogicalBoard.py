@@ -84,13 +84,10 @@ class LogicalBoard:
         row = 8 - int(trad[1])
         return (row, col)
 
-    def move_piece(self, fromLoc, toLoc):
-        fromLocArray = self.traditional_to_array(fromLoc)
-        toLocArray = self.traditional_to_array(toLoc)
-
+    def move_piece_array(self, fromLocArray, toLocArray):
         if (not self.validate_move(fromLocArray, toLocArray)):
-            raise ValueError("Given move '" + fromLoc +
-                             " -> " + toLoc + "' is unvalid.")
+            raise ValueError("Given move '" + str(fromLocArray) +
+                             " -> " + str(toLocArray) + "' is unvalid.")
         else:
             # move piece to new location
             self.board[toLocArray[0]][toLocArray[1]
@@ -99,7 +96,13 @@ class LogicalBoard:
             # remove piece from old location
             self.board[fromLocArray[0]][fromLocArray[1]] = self.emptyPiece
 
-        return fromLoc + " -> " + toLoc
+        return str(fromLocArray) + " -> " + str(toLocArray)
+
+    def move_piece_trad(self, fromLoc, toLoc):
+        fromLocArray = self.traditional_to_array(fromLoc)
+        toLocArray = self.traditional_to_array(toLoc)
+
+        return self.move_piece_array(fromLoc, toLoc)
 
     def validate_move(self, fromLoc, toLoc):
         # Determine the type of piece that is about to be moved.
