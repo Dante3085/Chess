@@ -38,13 +38,18 @@ class BoardInteractor:
             # that should be moved.
             if not self.boardRenderer.cell_is_empty(markedCell[0], markedCell[1]):
                 self.cellPieceToMove = markedCell
+            else:
+                return
 
         # stop moving the piece when the left mouse button is released and
         # put it to the current marked cell (the new location) if that move
         # is possible. Otherwise put the piece back to it's original location.
         elif self.on_left_mouse_released():
             markedCellOnMouseRelease = self.boardRenderer.markedCell
-            if markedCellOnMouseRelease in self.boardRenderer.logicalBoard.get_possible_moves(self.markedCellOnMove):
+            if (
+                    not self.boardRenderer.cell_is_empty(self.markedCellOnMove[0], self.markedCellOnMove[1]) and
+                    markedCellOnMouseRelease in self.boardRenderer.logicalBoard.get_possible_moves(self.markedCellOnMove)
+               ):
                 self.boardRenderer.logicalBoard.move_piece_array(self.markedCellOnMove, markedCellOnMouseRelease)
             else:
                 self.boardRenderer.move_piece(self.cellPieceToMove,

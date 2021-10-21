@@ -3,8 +3,8 @@ from Board import Board
 import sys, pygame
 
 board = Board()
-
-screen = pygame.display.set_mode((1280, 720), pygame.RESIZABLE)
+screen = pygame.display.set_mode((1280, 720), flags=pygame.RESIZABLE | pygame.DOUBLEBUF)
+clock = pygame.time.Clock()
 
 while 1:
     # check pygame events
@@ -20,6 +20,9 @@ while 1:
 
     board.update(screen)
     board.render(screen)
+
+    clock.tick()
+    print(clock.get_fps())
     
     # update display surface to screen
-    pygame.display.flip()  
+    pygame.display.flip()
