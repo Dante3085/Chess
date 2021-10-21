@@ -1,4 +1,3 @@
-
 '''
 - Schachbrettklasse
 - Figuren auf Brett
@@ -47,13 +46,13 @@ class LogicalBoard:
                 ["bR", "bS", "bB", "bQ", "bK", "bB", "bS", "bR"],
                 ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
                 [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,
-                    self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
+                 self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
                 [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,
-                    self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
+                 self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
                 [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,
-                    self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
+                 self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
                 [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,
-                    self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
+                 self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece, ],
                 ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
                 ["wR", "wS", "wB", "wQ", "wK", "wB", "wS", "wR"]
             ]
@@ -91,7 +90,7 @@ class LogicalBoard:
         else:
             # move piece to new location
             self.board[toLocArray[0]][toLocArray[1]
-                                      ] = self.board[fromLocArray[0]][fromLocArray[1]]
+            ] = self.board[fromLocArray[0]][fromLocArray[1]]
 
             # remove piece from old location
             self.board[fromLocArray[0]][fromLocArray[1]] = self.emptyPiece
@@ -114,7 +113,7 @@ class LogicalBoard:
         elif pieceType == "K":
             return self.validate_move_king(fromLoc, toLoc)
         elif pieceType == "S":
-            return self.validate_move_knight(fromLoc, toLoc)
+            return toLoc in self.get_possible_moves_knight(fromLoc)
         elif pieceType == "B":
             return self.validate_move_bishop(fromLoc, toLoc)
         elif pieceType == "Q":
@@ -125,17 +124,69 @@ class LogicalBoard:
     def get_possible_moves(self, position):
         piece = self.board[position[0]][position[1]]
         if "R" in piece:
-            return []
+            return self.get_possible_moves_rook(position)
         elif "K" in piece:
-            return []
+            return self.get_possible_moves_king(position)
         elif "S" in piece:
-            return []
+            return self.get_possible_moves_knight(position)
         elif "B" in piece:
-            return []
+            return self.get_possible_moves_bishop(position)
         elif "Q" in piece:
-            return []
+            return self.get_possible_moves_queen(position)
         elif "P" in piece:
             return self.get_possible_moves_pawn(position)
+
+    def get_possible_moves_rook(self, fromLoc):
+        return []
+
+    def get_possible_moves_king(self, fromLoc):
+        return[]
+
+    def get_possible_moves_bishop(self, fromloc):
+        return []
+
+    def get_possible_moves_queen(self, fromLoc):
+        return []
+
+    def get_possible_moves_knight(self, fromLoc):
+        fromRow = fromLoc[0]
+        fromCol = fromLoc[1]
+        pawnColor = self.board[fromLoc[0]][fromLoc[1]][0]
+
+        possibleLocations = [
+            (fromRow + 2, fromCol + 1),
+            (fromRow + 2, fromCol - 1),
+
+            (fromRow - 2, fromCol + 1),
+            (fromRow - 2, fromCol - 1),
+
+            (fromRow + 1, fromCol + 2),
+            (fromRow + 1, fromCol - 2),
+
+            (fromRow - 1, fromCol + 2),
+            (fromRow - 1, fromCol - 2)
+        ]
+
+        locationsToRemove = []
+        for location in possibleLocations:
+            # Remove locations that are not on the chessboard.
+            if (
+                location[0] < 0 or location[0] > 7 or
+                location[1] < 0 or location[1] > 7
+               ):
+                locationsToRemove.append(location)
+
+            # Remove locations that have friendly pieces on them.
+            elif (
+                pawnColor == "w" and "w" in self.board[location[0]][location[1]] or
+                pawnColor == "b" and "b" in self.board[location[0]][location[1]]
+               ):
+                locationsToRemove.append(location)
+
+        for location in locationsToRemove:
+            possibleLocations.remove(location)
+
+        return possibleLocations
 
     def get_possible_moves_pawn(self, fromLoc):
         # Black or white pawn?
