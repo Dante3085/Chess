@@ -189,11 +189,67 @@ class LogicalBoard:
 
         return self.remove_not_on_board_and_friendly(possibleLocations, kingColor)
 
-    def get_possible_moves_bishop(self, fromloc):
-        return []
+    def get_possible_moves_bishop(self, fromLoc):
+        fromRow = fromLoc[0]
+        fromCol = fromLoc[1]
+        bishopColor = self.board[fromLoc[0]][fromLoc[1]][0]
+
+        possibleLocations = []
+
+        # top left
+        row = fromRow - 1
+        col = fromCol - 1
+        while row >= 0 and col >= 0:
+            possibleLocations.append((row, col))
+
+            # Break the loop if we encountered a piece
+            if self.board[row][col] != self.emptyPiece:
+                break
+
+            row -= 1
+            col -= 1
+
+        # top right
+        row = fromRow - 1
+        col = fromCol + 1
+        while row >= 0 and col <= 7:
+            possibleLocations.append((row, col))
+
+            if self.board[row][col] != self.emptyPiece:
+                break
+
+            row -= 1
+            col += 1
+
+        # bottom right
+        row = fromRow + 1
+        col = fromCol + 1
+        while row <= 7 and col <= 7:
+            possibleLocations.append((row, col))
+
+            if self.board[row][col] != self.emptyPiece:
+                break
+
+            row += 1
+            col += 1
+
+        # bottom left
+        row = fromRow + 1
+        col = fromCol - 1
+        while row <= 7 and col >= 0:
+            possibleLocations.append((row, col))
+
+            if self.board[row][col] != self.emptyPiece:
+                break
+
+            row += 1
+            col -= 1
+
+        return self.remove_not_on_board_and_friendly(possibleLocations, bishopColor)
 
     def get_possible_moves_queen(self, fromLoc):
-        return []
+        return self.get_possible_moves_bishop(fromLoc) + \
+               self.get_possible_moves_rook(fromLoc)
 
     def get_possible_moves_knight(self, fromLoc):
         fromRow = fromLoc[0]
