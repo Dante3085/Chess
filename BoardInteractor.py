@@ -57,7 +57,7 @@ class BoardInteractor:
             self.cellPieceToMove = None
 
         # if there is a piece to move, move it to the position of the mouse cursor.
-        if self.cellPieceToMove != None:
+        if self.cellPieceToMove is not None:
             cellSize = self.boardRenderer.get_cell_size()
             destination = (mousePos[0] - (cellSize/2), mousePos[1] - (cellSize/2))
             self.boardRenderer.move_piece(self.cellPieceToMove, destination)
