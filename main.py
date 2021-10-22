@@ -1,6 +1,9 @@
 
-from Board import Board
-import sys, pygame
+# TODO: Enforce pip python styleguide to learn to write code that is consistent with one style.
+
+from Chess import Board
+import pygame
+import sys
 
 board = Board()
 screen = pygame.display.set_mode((1280, 720), flags=pygame.RESIZABLE | pygame.DOUBLEBUF)
@@ -14,7 +17,7 @@ while 1:
             if event.key == pygame.K_ESCAPE:
                 quitEvent = pygame.event.Event(pygame.QUIT, {})
                 pygame.event.post(quitEvent)
-            
+
             elif event.key == pygame.K_RETURN:
                 print(board)
 
@@ -22,7 +25,7 @@ while 1:
     board.render(screen)
 
     clock.tick()
-    print(clock.get_fps())
-    
+    # print(clock.get_fps())
+
     # update display surface to screen
     pygame.display.flip()
