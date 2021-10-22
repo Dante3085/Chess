@@ -14,6 +14,7 @@ P := Pawn
 from copy import deepcopy
 import pygame
 import math
+import sys
 
 class LogicalBoard:
     def __init__(self, board=None) -> None:
@@ -691,6 +692,23 @@ class Board:
     def update(self, screen):
         self.boardRenderer.update(screen)
         self.boardInteractor.update()
+        self.check_win_condition()
+
+    def check_win_condition(self):
+
+        # Check if one of the two kings was defeated.
+        whiteKingDefeated = True
+        blackKingDefeated = True
+        for row in self.logicalBoard.board:
+            if "wK" in row: whiteKingDefeated = False
+            if "bK" in row: blackKingDefeated = False
+        
+        if whiteKingDefeated:
+            print("Black won!")
+            sys.exit()
+        elif blackKingDefeated:
+            print("White won!")
+            sys.exit()
 
     def render(self, screen):
         self.boardRenderer.render(screen)
