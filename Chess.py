@@ -578,7 +578,7 @@ class BoardRenderer:
         # numbers
         for row in range(0, 8):
             currentCell = self.boardCells[row][0]
-            currentText = self.numberTexts[row]
+            currentText = self.numberTexts[7 - row]
             textPos = (currentCell.left + 0.1 * currentCell.width,
                        currentCell.top + 0.1 * currentCell.height)
             screen.blit(currentText, dest=textPos, area=currentText.get_rect())
