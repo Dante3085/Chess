@@ -92,7 +92,7 @@ class LogicalBoard:
         fromLocArray = self.traditional_to_array(fromLoc)
         toLocArray = self.traditional_to_array(toLoc)
 
-        return self.move_piece_array(fromLoc, toLoc)
+        return self.move_piece_array(fromLocArray, toLocArray)
 
     def validate_move(self, fromLoc, toLoc):
         # Determine the type of piece that is about to be moved.
@@ -712,6 +712,9 @@ class Board:
 
     def render(self, screen):
         self.boardRenderer.render(screen)
+
+    def move(self, fromLoc, toLoc):
+        self.logicalBoard.move_piece_trad(fromLoc, toLoc)
 
     def __repr__(self):
         return self.logicalBoard.__repr__()

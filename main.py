@@ -4,10 +4,22 @@
 from Chess import Board
 import pygame
 import sys
+import threading
+
+def make_move(board):
+    move = input(">>")
+    fromAndTo = move.split("->")
+    fromLoc = fromAndTo[0]
+    toLoc = fromAndTo[1]
+    board.move(fromLoc, toLoc)
+
+    threading.Thread(target=make_move, args=[board]).start()
 
 board = Board()
 screen = pygame.display.set_mode((1280, 720), flags=pygame.RESIZABLE | pygame.DOUBLEBUF)
-clock = pygame.time.Clock()
+
+thread = threading.Thread(target=make_move, args=[board])
+thread.start()
 
 while 1:
     # check pygame events
@@ -23,9 +35,6 @@ while 1:
 
     board.update(screen)
     board.render(screen)
-
-    clock.tick()
-    # print(clock.get_fps())
 
     # update display surface to screen
     pygame.display.flip()
