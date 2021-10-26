@@ -692,7 +692,6 @@ class Board:
     def update(self, screen):
         self.boardRenderer.update(screen)
         self.boardInteractor.update()
-        self.check_win_condition()
 
     def check_win_condition(self):
 
@@ -704,17 +703,18 @@ class Board:
             if "bK" in row: blackKingDefeated = False
         
         if whiteKingDefeated:
-            print("Black won!")
-            sys.exit()
+            return "b"
         elif blackKingDefeated:
-            print("White won!")
-            sys.exit()
+            return "w"
+        else:
+            return None
 
     def render(self, screen):
         self.boardRenderer.render(screen)
 
     def move(self, fromLoc, toLoc):
         self.logicalBoard.move_piece_trad(fromLoc, toLoc)
+        return self.check_win_condition()
 
     def __repr__(self):
         return self.logicalBoard.__repr__()
