@@ -3,6 +3,7 @@
 
 from Chess import Board
 from AI import ChessAgent
+from AI import RandomAgent
 import pygame
 import sys
 import threading
@@ -11,7 +12,7 @@ def agent_make_move(board, agent):
     input("Press Enter")
 
     # Get and parse the move
-    move = agent.make_move(board)
+    move = agent.make_move(board.logicalBoard)
     fromAndTo = move.split("->")
     fromLoc = fromAndTo[0]
     toLoc = fromAndTo[1]
@@ -26,13 +27,13 @@ def agent_make_move(board, agent):
     elif matchResult == "b":
         if agent.isWhite: agent.give_reward(0)
         else: agent.give_reward(1)
-    elif matchResult == None:
+    elif matchResult is None:
         threading.Thread(target=agent_make_move, args=[board, agent]).start()
 
 board = Board()
 screen = pygame.display.set_mode((1280, 720), flags=pygame.RESIZABLE | pygame.DOUBLEBUF)
 
-agent = ChessAgent(isWhite=True)
+agent = RandomAgent(isWhite=True)
 
 thread = threading.Thread(target=agent_make_move, args=[board, agent])
 thread.start()

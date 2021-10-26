@@ -29,6 +29,17 @@ class LogicalBoard:
             "h": 7
         }
 
+        self.columnToLetter = {
+            0: "a",
+            1: "b",
+            2: "c",
+            3: "d",
+            4: "e",
+            5: "f",
+            6: "g",
+            7: "h"
+        }
+
         # The empty piece represents the absence of any of the real pieces on a location.
         self.emptyPiece = "||"
 
@@ -66,6 +77,25 @@ class LogicalBoard:
     def get_piece_array(self, row, col):
         return self.board[row][col]
 
+    def get_all_white_pieces(self):
+        '''Returns a list with the locations for all the white pieces.'''
+        locations = []
+        for row in range(0, 8):
+            for col in range(0, 8):
+                if "w" in self.board[row][col]:
+                    locations.append((row, col))
+        return locations
+
+    def get_all_black_pieces(self):
+        '''Returns a list with the locations for all the black pieces.'''
+        locations = []
+        for row in range(0, 8):
+            for col in range(0, 8):
+                if "b" in self.board[row][col]:
+                    locations.append((row, col))
+        return locations
+        pass
+
     def traditional_to_array(self, trad):
         '''Converts the traditional chess notation (e.g.: e8) to an array indexing notation (e.g.: e8 -> row=0, col=4)'''
         # 8 - i
@@ -73,6 +103,9 @@ class LogicalBoard:
         col = self.letterToColumn[trad[0]]
         row = 8 - int(trad[1])
         return (row, col)
+
+    def array_to_trad(self, rowAndCol):
+        return self.columnToLetter[rowAndCol[1]] + str(8 - rowAndCol[0])
 
     def move_piece_array(self, fromLocArray, toLocArray):
         if (not self.validate_move(fromLocArray, toLocArray)):
