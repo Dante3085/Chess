@@ -14,7 +14,6 @@ P := Pawn
 from copy import deepcopy
 import pygame
 import math
-import sys
 
 class LogicalBoard:
     def __init__(self, board=None) -> None:
@@ -163,6 +162,26 @@ class LogicalBoard:
             return self.get_possible_moves_queen(position)
         elif "P" in piece:
             return self.get_possible_moves_pawn(position)
+
+    def get_all_possible_moves_white(self):
+        allWhitePieces = self.get_all_white_pieces()
+        allPossibleMovesWhite = []
+        for whitePiecePosition in allWhitePieces:
+            whitePiecePossibleDestinations = self.get_possible_moves(whitePiecePosition)
+            for destination in whitePiecePossibleDestinations:
+                allPossibleMovesWhite.append(self.array_to_trad(whitePiecePosition) + "->" + self.array_to_trad(destination))
+
+        return allPossibleMovesWhite
+
+    def get_all_possible_moves_black(self):
+        allBlackPieces = self.get_all_black_pieces()
+        allPossibleMovesBlack = []
+        for blackPiecePosition in allBlackPieces:
+            blackPiecePossibleDestinations = self.get_possible_moves(blackPiecePosition)
+            for destination in blackPiecePossibleDestinations:
+                allPossibleMovesBlack.append(self.array_to_trad(blackPiecePosition) + "->" + self.array_to_trad(destination))
+
+        return allPossibleMovesBlack
 
     def get_possible_moves_rook(self, fromLoc):
         fromRow = fromLoc[0]
