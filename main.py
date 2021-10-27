@@ -2,14 +2,16 @@
 # TODO: Enforce pip python styleguide to learn to write code that is consistent with one style.
 
 from Chess import Board
-from AI import ChessAgent
 from AI import RandomAgent
 import pygame
 import sys
+import os
 import threading
+import time
 
 def agent_make_move(board, agent):
-    input("Press Enter")
+    # input("Press Enter")
+    # time.sleep(.1)
 
     # Get and parse the move
     move = agent.make_move(board.logicalBoard)
@@ -21,12 +23,9 @@ def agent_make_move(board, agent):
     matchResult = board.move(fromLoc, toLoc)
 
     # Check whether the game has ended, if not make the next move.
-    if matchResult == "w":
-        if agent.isWhite: agent.give_reward(1)
-        else: agent.give_reward(0)
-    elif matchResult == "b":
-        if agent.isWhite: agent.give_reward(0)
-        else: agent.give_reward(1)
+    if matchResult == "w" or matchResult == "b":
+        print("Es brauchte '" + str(board.logicalBoard.moveCounter) + "' Züge, um das Spiel zu beenden.")
+        sys.exit()
     elif matchResult is None:
         threading.Thread(target=agent_make_move, args=[board, agent]).start()
 
@@ -41,7 +40,8 @@ thread.start()
 while 1:
     # check pygame events
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit()
+        if event.type == pygame.QUIT:
+            os._exit(1)
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 quitEvent = pygame.event.Event(pygame.QUIT, {})
