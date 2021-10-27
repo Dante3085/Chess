@@ -40,6 +40,8 @@ class LogicalBoard:
             7: "h"
         }
 
+        self.moveCounter = 0
+
         # The empty piece represents the absence of any of the real pieces on a location.
         self.emptyPiece = "||"
 
@@ -108,13 +110,15 @@ class LogicalBoard:
         return self.columnToLetter[rowAndCol[1]] + str(8 - rowAndCol[0])
 
     def move_piece_array(self, fromLocArray, toLocArray):
-        if (not self.validate_move(fromLocArray, toLocArray)):
+        if not self.validate_move(fromLocArray, toLocArray):
             raise ValueError("Given move '" + str(fromLocArray) +
                              " -> " + str(toLocArray) + "' is unvalid.")
         else:
+            # increment move counter
+            self.moveCounter += 1
+
             # move piece to new location
-            self.board[toLocArray[0]][toLocArray[1]
-            ] = self.board[fromLocArray[0]][fromLocArray[1]]
+            self.board[toLocArray[0]][toLocArray[1]] = self.board[fromLocArray[0]][fromLocArray[1]]
 
             # remove piece from old location
             self.board[fromLocArray[0]][fromLocArray[1]] = self.emptyPiece
