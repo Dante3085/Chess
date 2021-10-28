@@ -169,7 +169,7 @@ class LogicalBoard:
         for whitePiecePosition in allWhitePieces:
             whitePiecePossibleDestinations = self.get_possible_moves(whitePiecePosition)
             for destination in whitePiecePossibleDestinations:
-                allPossibleMovesWhite.append(self.array_to_trad(whitePiecePosition) + "->" + self.array_to_trad(destination))
+                allPossibleMovesWhite.append((self.array_to_trad(whitePiecePosition), self.array_to_trad(destination)))
 
         return allPossibleMovesWhite
 
@@ -179,7 +179,7 @@ class LogicalBoard:
         for blackPiecePosition in allBlackPieces:
             blackPiecePossibleDestinations = self.get_possible_moves(blackPiecePosition)
             for destination in blackPiecePossibleDestinations:
-                allPossibleMovesBlack.append(self.array_to_trad(blackPiecePosition) + "->" + self.array_to_trad(destination))
+                allPossibleMovesBlack.append((self.array_to_trad(blackPiecePosition), self.array_to_trad(destination)))
 
         return allPossibleMovesBlack
 
@@ -446,7 +446,7 @@ class BoardRenderer:
         self.cellPieceToMove = (-1, -1)
         self.mousePos = (-1, -1)
 
-        self.init_pieces()
+        self.init_pieces_images()
 
         # font stuff
         pygame.font.init()
@@ -478,7 +478,7 @@ class BoardRenderer:
             self.myFont.render("h", True, self.textColor)
         ]
 
-    def init_pieces(self):
+    def init_pieces_images(self):
         '''Loads all the images for the chess pieces.'''
 
         self.originalWhitePawnImage = pygame.image.load("pieces/whitePawn.png")
@@ -768,7 +768,11 @@ class Board:
     def render(self, screen):
         self.boardRenderer.render(screen)
 
-    def move(self, fromLoc, toLoc):
+    def move_array(self, fromLoc, toLoc):
+        self.logicalBoard.move_piece_trad(fromLoc, toLoc)
+        return self.check_win_condition()
+
+    def move_trad(self, fromLoc, toLoc):
         self.logicalBoard.move_piece_trad(fromLoc, toLoc)
         return self.check_win_condition()
 
