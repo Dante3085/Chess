@@ -1,4 +1,3 @@
-
 '''
 b := black
 w := white
@@ -14,6 +13,7 @@ P := Pawn
 from copy import deepcopy
 import pygame
 import math
+
 
 class LogicalBoard:
     def __init__(self, board=None) -> None:
@@ -44,8 +44,8 @@ class LogicalBoard:
         # The empty piece represents the absence of any of the real pieces on a location.
         self.emptyPiece = "||"
 
-        if board == None:
-            self.board = [
+        if board is None:
+            self.__board = [
                 ["bR", "bS", "bB", "bQ", "bK", "bB", "bS", "bR"],
                 ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
                 [self.emptyPiece, self.emptyPiece, self.emptyPiece, self.emptyPiece,
@@ -63,21 +63,40 @@ class LogicalBoard:
             if len(board) != 8 or len(board[0]) != 8:
                 raise ValueError("Given board has incorrect dimensions. Must be 8x8.")
             else:
-                self.board = board
+                self.__board = board
+
+    def game_has_finished(self):
+        """Returns 'w' if white has won, 'b' if black has won and None
+           if the game is still going."""
+
+        whiteKingDefeated = True
+        blackKingDefeated = True
+        for row in self.__board:
+            if "wK" in row: whiteKingDefeated = False
+            if "bK" in row: blackKingDefeated = False
+
+        if whiteKingDefeated:
+            return "b"
+        elif blackKingDefeated:
+            return "w"
+        else:
+            return None
 
     def get_piece(self, pieceLoc):
-        loc = self.traditional_to_array(pieceLoc)
+        """Returns the piece on the board at the given location(e.g. a4, e3)"""
+        loc = self.__traditional_to_array(pieceLoc)
         return self.get_piece_array(loc[0], loc[1])
 
-    def __get_piece_array(self, row, col):
-        return self.board[row][col]
+    def get_piece_array(self, row, col):
+        """Returns the piece on the board at the given row and column."""
+        return self.__board[row][col]
 
     def get_all_white_pieces(self):
         '''Returns a list with the locations for all the white pieces.'''
         locations = []
         for row in range(0, 8):
             for col in range(0, 8):
-                if "w" in self.board[row][col]:
+                if "w" in self.__board[row][col]:
                     locations.append((row, col))
         return locations
 
@@ -86,7 +105,7 @@ class LogicalBoard:
         locations = []
         for row in range(0, 8):
             for col in range(0, 8):
-                if "b" in self.board[row][col]:
+                if "b" in self.__board[row][col]:
                     locations.append((row, col))
         return locations
         pass
@@ -102,7 +121,7 @@ class LogicalBoard:
     def __array_to_trad(self, rowAndCol):
         return self.__columnToLetter[rowAndCol[1]] + str(8 - rowAndCol[0])
 
-    def __move_piece_array(self, fromLocArray, toLocArray):
+    def move_piece_array(self, fromLocArray, toLocArray):
         if not self.validate_move(fromLocArray, toLocArray):
             raise ValueError("Given move '" + str(fromLocArray) +
                              " -> " + str(toLocArray) + "' is unvalid.")
@@ -111,51 +130,51 @@ class LogicalBoard:
             self.moveCounter += 1
 
             # move piece to new location
-            self.board[toLocArray[0]][toLocArray[1]] = self.board[fromLocArray[0]][fromLocArray[1]]
+            self.__board[toLocArray[0]][toLocArray[1]] = self.__board[fromLocArray[0]][fromLocArray[1]]
 
             # remove piece from old location
-            self.board[fromLocArray[0]][fromLocArray[1]] = self.emptyPiece
+            self.__board[fromLocArray[0]][fromLocArray[1]] = self.emptyPiece
 
         return str(fromLocArray) + " -> " + str(toLocArray)
 
     def move_piece(self, fromLoc, toLoc):
-        fromLocArray = self.traditional_to_array(fromLoc)
-        toLocArray = self.traditional_to_array(toLoc)
+        fromLocArray = self.__traditional_to_array(fromLoc)
+        toLocArray = self.__traditional_to_array(toLoc)
 
         return self.move_piece_array(fromLocArray, toLocArray)
 
     def validate_move(self, fromLoc, toLoc):
         # Determine the type of piece that is about to be moved.
-        pieceType = self.board[fromLoc[0]][fromLoc[1]][1]
+        pieceType = self.__board[fromLoc[0]][fromLoc[1]][1]
 
         # For each type of piece delegate to a specific sub-method that checks move validity.
         if pieceType == "R":
-            return toLoc in self.get_possible_moves_rook(fromLoc)
+            return toLoc in self.__get_possible_moves_rook(fromLoc)
         elif pieceType == "K":
-            return toLoc in self.get_possible_moves_king(fromLoc)
+            return toLoc in self.__get_possible_moves_king(fromLoc)
         elif pieceType == "S":
-            return toLoc in self.get_possible_moves_knight(fromLoc)
+            return toLoc in self.__get_possible_moves_knight(fromLoc)
         elif pieceType == "B":
-            return toLoc in self.get_possible_moves_bishop(fromLoc)
+            return toLoc in self.__get_possible_moves_bishop(fromLoc)
         elif pieceType == "Q":
-            return toLoc in self.get_possible_moves_queen(fromLoc)
+            return toLoc in self.__get_possible_moves_queen(fromLoc)
         elif pieceType == "P":
-            return toLoc in self.get_possible_moves_pawn(fromLoc)
+            return toLoc in self.__get_possible_moves_pawn(fromLoc)
 
     def get_possible_moves(self, position):
-        piece = self.board[position[0]][position[1]]
+        piece = self.__board[position[0]][position[1]]
         if "R" in piece:
-            return self.get_possible_moves_rook(position)
+            return self.__get_possible_moves_rook(position)
         elif "K" in piece:
-            return self.get_possible_moves_king(position)
+            return self.__get_possible_moves_king(position)
         elif "S" in piece:
-            return self.get_possible_moves_knight(position)
+            return self.__get_possible_moves_knight(position)
         elif "B" in piece:
-            return self.get_possible_moves_bishop(position)
+            return self.__get_possible_moves_bishop(position)
         elif "Q" in piece:
-            return self.get_possible_moves_queen(position)
+            return self.__get_possible_moves_queen(position)
         elif "P" in piece:
-            return self.get_possible_moves_pawn(position)
+            return self.__get_possible_moves_pawn(position)
 
     def get_all_possible_moves_white(self):
         allWhitePieces = self.get_all_white_pieces()
@@ -163,7 +182,8 @@ class LogicalBoard:
         for whitePiecePosition in allWhitePieces:
             whitePiecePossibleDestinations = self.get_possible_moves(whitePiecePosition)
             for destination in whitePiecePossibleDestinations:
-                allPossibleMovesWhite.append((self.array_to_trad(whitePiecePosition), self.array_to_trad(destination)))
+                allPossibleMovesWhite.append(
+                    (self.__array_to_trad(whitePiecePosition), self.__array_to_trad(destination)))
 
         return allPossibleMovesWhite
 
@@ -173,14 +193,15 @@ class LogicalBoard:
         for blackPiecePosition in allBlackPieces:
             blackPiecePossibleDestinations = self.get_possible_moves(blackPiecePosition)
             for destination in blackPiecePossibleDestinations:
-                allPossibleMovesBlack.append((self.array_to_trad(blackPiecePosition), self.array_to_trad(destination)))
+                allPossibleMovesBlack.append(
+                    (self.__array_to_trad(blackPiecePosition), self.__array_to_trad(destination)))
 
         return allPossibleMovesBlack
 
     def __get_possible_moves_rook(self, fromLoc):
         fromRow = fromLoc[0]
         fromCol = fromLoc[1]
-        rookColor = self.board[fromLoc[0]][fromLoc[1]][0]
+        rookColor = self.__board[fromLoc[0]][fromLoc[1]][0]
 
         possibleLocations = []
 
@@ -188,36 +209,36 @@ class LogicalBoard:
         for i in range(fromRow - 1, -1, -1):
             newLocation = (i, fromCol)
             possibleLocations.append(newLocation)
-            if self.board[newLocation[0]][newLocation[1]] != self.emptyPiece:
+            if self.__board[newLocation[0]][newLocation[1]] != self.emptyPiece:
                 break
 
         # down
         for i in range(fromRow + 1, 8):
             newLocation = (i, fromCol)
             possibleLocations.append(newLocation)
-            if self.board[newLocation[0]][newLocation[1]] != self.emptyPiece:
+            if self.__board[newLocation[0]][newLocation[1]] != self.emptyPiece:
                 break
 
         # right
         for i in range(fromCol + 1, 8):
             newLocation = (fromRow, i)
             possibleLocations.append(newLocation)
-            if self.board[newLocation[0]][newLocation[1]] != self.emptyPiece:
+            if self.__board[newLocation[0]][newLocation[1]] != self.emptyPiece:
                 break
 
         # left
         for i in range(fromCol - 1, -1, -1):
             newLocation = (fromRow, i)
             possibleLocations.append(newLocation)
-            if self.board[newLocation[0]][newLocation[1]] != self.emptyPiece:
+            if self.__board[newLocation[0]][newLocation[1]] != self.emptyPiece:
                 break
 
-        return self.remove_not_on_board_and_friendly(possibleLocations, rookColor)
+        return self.__remove_not_on_board_and_friendly(possibleLocations, rookColor)
 
     def __get_possible_moves_king(self, fromLoc):
         fromRow = fromLoc[0]
         fromCol = fromLoc[1]
-        kingColor = self.board[fromLoc[0]][fromLoc[1]][0]
+        kingColor = self.__board[fromLoc[0]][fromLoc[1]][0]
 
         possibleLocations = [
             (fromRow - 1, fromCol),
@@ -226,12 +247,12 @@ class LogicalBoard:
             (fromRow, fromCol - 1)
         ]
 
-        return self.remove_not_on_board_and_friendly(possibleLocations, kingColor)
+        return self.__remove_not_on_board_and_friendly(possibleLocations, kingColor)
 
     def __get_possible_moves_bishop(self, fromLoc):
         fromRow = fromLoc[0]
         fromCol = fromLoc[1]
-        bishopColor = self.board[fromLoc[0]][fromLoc[1]][0]
+        bishopColor = self.__board[fromLoc[0]][fromLoc[1]][0]
 
         possibleLocations = []
 
@@ -242,7 +263,7 @@ class LogicalBoard:
             possibleLocations.append((row, col))
 
             # Break the loop if we encountered a piece
-            if self.board[row][col] != self.emptyPiece:
+            if self.__board[row][col] != self.emptyPiece:
                 break
 
             row -= 1
@@ -254,7 +275,7 @@ class LogicalBoard:
         while row >= 0 and col <= 7:
             possibleLocations.append((row, col))
 
-            if self.board[row][col] != self.emptyPiece:
+            if self.__board[row][col] != self.emptyPiece:
                 break
 
             row -= 1
@@ -266,7 +287,7 @@ class LogicalBoard:
         while row <= 7 and col <= 7:
             possibleLocations.append((row, col))
 
-            if self.board[row][col] != self.emptyPiece:
+            if self.__board[row][col] != self.emptyPiece:
                 break
 
             row += 1
@@ -278,22 +299,22 @@ class LogicalBoard:
         while row <= 7 and col >= 0:
             possibleLocations.append((row, col))
 
-            if self.board[row][col] != self.emptyPiece:
+            if self.__board[row][col] != self.emptyPiece:
                 break
 
             row += 1
             col -= 1
 
-        return self.remove_not_on_board_and_friendly(possibleLocations, bishopColor)
+        return self.__remove_not_on_board_and_friendly(possibleLocations, bishopColor)
 
     def __get_possible_moves_queen(self, fromLoc):
-        return self.get_possible_moves_bishop(fromLoc) + \
-               self.get_possible_moves_rook(fromLoc)
+        return self.__get_possible_moves_bishop(fromLoc) + \
+               self.__get_possible_moves_rook(fromLoc)
 
     def __get_possible_moves_knight(self, fromLoc):
         fromRow = fromLoc[0]
         fromCol = fromLoc[1]
-        knightColor = self.board[fromLoc[0]][fromLoc[1]][0]
+        knightColor = self.__board[fromLoc[0]][fromLoc[1]][0]
 
         possibleLocations = [
             (fromRow + 2, fromCol + 1),
@@ -309,21 +330,21 @@ class LogicalBoard:
             (fromRow - 1, fromCol - 2)
         ]
 
-        return self.remove_not_on_board_and_friendly(possibleLocations, knightColor)
+        return self.__remove_not_on_board_and_friendly(possibleLocations, knightColor)
 
     def __get_possible_moves_pawn(self, fromLoc):
         if fromLoc[0] == 7 or fromLoc[0] == 0:
             return []
 
         # Black or white pawn?
-        pawnColor = self.board[fromLoc[0]][fromLoc[1]][0]
+        pawnColor = self.__board[fromLoc[0]][fromLoc[1]][0]
 
         possibleLocations = []
 
         # black pawn
         if pawnColor == "b":
             # No enemy piece in front
-            if self.board[fromLoc[0] + 1][fromLoc[1]] == self.emptyPiece:
+            if self.__board[fromLoc[0] + 1][fromLoc[1]] == self.emptyPiece:
                 possibleLocations.append((fromLoc[0] + 1, fromLoc[1]))
 
                 # Is the pawn in it's initial location or has it already been moved?
@@ -334,29 +355,29 @@ class LogicalBoard:
             # Enemy pieces diagonally
             # Pawn hugs left wall
             if fromLoc[1] == 0:
-                if "w" in self.board[fromLoc[0] + 1][1]:
+                if "w" in self.__board[fromLoc[0] + 1][1]:
                     possibleLocations.append((fromLoc[0] + 1, 1))
 
             # Pawn hugs right wall
             elif fromLoc[1] == 7:
-                if "w" in self.board[fromLoc[0] + 1][6]:
+                if "w" in self.__board[fromLoc[0] + 1][6]:
                     possibleLocations.append((fromLoc[0] + 1, 6))
 
             # Pawn doesn't hug a wall
             else:
                 # left diagonal
-                if "w" in self.board[fromLoc[0] + 1][fromLoc[1] - 1]:
+                if "w" in self.__board[fromLoc[0] + 1][fromLoc[1] - 1]:
                     possibleLocations.append(
                         (fromLoc[0] + 1, fromLoc[1] - 1))
                 # right diagonal
-                if "w" in self.board[fromLoc[0] + 1][fromLoc[1] + 1]:
+                if "w" in self.__board[fromLoc[0] + 1][fromLoc[1] + 1]:
                     possibleLocations.append(
                         (fromLoc[0] + 1, fromLoc[1] + 1))
 
         # white pawn
         else:
             # no piece in front
-            if self.board[fromLoc[0] - 1][fromLoc[1]] == self.emptyPiece:
+            if self.__board[fromLoc[0] - 1][fromLoc[1]] == self.emptyPiece:
                 possibleLocations.append((fromLoc[0] - 1, fromLoc[1]))
 
                 # initial pos
@@ -366,22 +387,22 @@ class LogicalBoard:
             # enemy pieces diagonally
             # hugs left wall
             if fromLoc[1] == 0:
-                if "b" in self.board[fromLoc[0] - 1][1]:
+                if "b" in self.__board[fromLoc[0] - 1][1]:
                     possibleLocations.append((fromLoc[0] - 1, 1))
 
             # hugs right wall
             elif fromLoc[1] == 7:
-                if "b" in self.board[fromLoc[0] - 1][6]:
+                if "b" in self.__board[fromLoc[0] - 1][6]:
                     possibleLocations.append((fromLoc[0] - 1, 6))
 
             # doesnt hug wall
             else:
                 # left diagonal
-                if "b" in self.board[fromLoc[0] - 1][fromLoc[1] - 1]:
+                if "b" in self.__board[fromLoc[0] - 1][fromLoc[1] - 1]:
                     possibleLocations.append(
                         (fromLoc[0] - 1, fromLoc[1] - 1))
                 # right diagonal
-                if "b" in self.board[fromLoc[0] - 1][fromLoc[1] + 1]:
+                if "b" in self.__board[fromLoc[0] - 1][fromLoc[1] + 1]:
                     possibleLocations.append(
                         (fromLoc[0] - 1, fromLoc[1] + 1))
 
@@ -395,14 +416,14 @@ class LogicalBoard:
         locationsToRemove = []
         for location in possibleLocations:
             if (
-                location[0] < 0 or location[0] > 7 or
-                location[1] < 0 or location[1] > 7
-               ):
+                    location[0] < 0 or location[0] > 7 or
+                    location[1] < 0 or location[1] > 7
+            ):
                 locationsToRemove.append(location)
             elif (
-                    pieceColor == "w" and "w" in self.board[location[0]][location[1]] or
-                    pieceColor == "b" and "b" in self.board[location[0]][location[1]]
-                 ):
+                    pieceColor == "w" and "w" in self.__board[location[0]][location[1]] or
+                    pieceColor == "b" and "b" in self.__board[location[0]][location[1]]
+            ):
                 locationsToRemove.append(location)
 
         finalLocations = deepcopy(possibleLocations)
@@ -415,7 +436,7 @@ class LogicalBoard:
         boardStr = ""
         rowIndex = 8
 
-        for row in self.board:
+        for row in self.__board:
             boardStr += str(rowIndex) + " "
             rowIndex -= 1
             for piece in row:
@@ -427,7 +448,7 @@ class LogicalBoard:
         return boardStr
 
 class BoardRenderer:
-    def __init__(self, logicalBoard) -> None:
+    def __init__(self, logicalBoard: LogicalBoard) -> None:
 
         # board stuff
         self.logicalBoard = logicalBoard
@@ -577,7 +598,7 @@ class BoardRenderer:
 
         for row in range(0, 8):
             for col in range(0, 8):
-                currentPiece = self.logicalBoard.board[row][col]
+                currentPiece = self.logicalBoard.get_piece_array(row, col)
 
                 destination = (-1, -1)
                 if self.cellPieceToMove == (row, col):
@@ -642,7 +663,7 @@ class BoardRenderer:
             screen.blit(currentText, dest=textPos, area=currentText.get_rect())
 
     def cell_is_empty(self, row, col):
-        return self.logicalBoard.board[row][col] == self.logicalBoard.emptyPiece
+        return self.logicalBoard.get_piece_array(row, col) == self.logicalBoard.emptyPiece
 
     def move_piece(self, fromCell, toPosition):
         '''Moves the piece at the given cell to the given position.'''
@@ -652,6 +673,7 @@ class BoardRenderer:
     def get_cell_size(self):
         '''Returns the side length every board's cell.'''
         return self.boardCells[0][0].size[0]
+
 
 class BoardInteractor:
     def __init__(self, boardRenderer):
@@ -724,18 +746,10 @@ class BoardInteractor:
                     return
         self.boardRenderer.markedCell = (-1, -1)
 
+
 class Board:
     def __init__(self):
-        self.logicalBoard = LogicalBoard(board=[
-                ["bR", "bS", "bB", "bQ", "bK", "bB", "bS", "bR"],
-                ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
-                ["||", "||", "||", "||", "||", "||", "||", "||",],
-                ["||", "||", "||", "||", "||", "||", "||", "||",],
-                ["||", "||", "||", "||", "||", "||", "||", "||",],
-                ["||", "||", "||", "||", "||", "||", "||", "||",],
-                ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
-                ["wR", "wS", "wB", "wQ", "wK", "wB", "wS", "wR"]
-        ])
+        self.logicalBoard = LogicalBoard()
         self.boardRenderer = BoardRenderer(self.logicalBoard)
         self.boardInteractor = BoardInteractor(self.boardRenderer)
 
@@ -744,30 +758,17 @@ class Board:
         self.boardInteractor.update()
 
     def check_win_condition(self):
-
-        # Check if one of the two kings was defeated.
-        whiteKingDefeated = True
-        blackKingDefeated = True
-        for row in self.logicalBoard.board:
-            if "wK" in row: whiteKingDefeated = False
-            if "bK" in row: blackKingDefeated = False
-        
-        if whiteKingDefeated:
-            return "b"
-        elif blackKingDefeated:
-            return "w"
-        else:
-            return None
+        return self.logicalBoard.game_has_finished()
 
     def render(self, screen):
         self.boardRenderer.render(screen)
 
     def move_array(self, fromLoc, toLoc):
-        self.logicalBoard.move_piece_trad(fromLoc, toLoc)
+        self.logicalBoard.move_piece(fromLoc, toLoc)
         return self.check_win_condition()
 
     def move_trad(self, fromLoc, toLoc):
-        self.logicalBoard.move_piece_trad(fromLoc, toLoc)
+        self.logicalBoard.move_piece(fromLoc, toLoc)
         return self.check_win_condition()
 
     def __repr__(self):
