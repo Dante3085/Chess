@@ -1,7 +1,12 @@
 
 """
+TODO: Improve code structure in entire project...
+      1. Reduce dependencies between pieces of code(update/render, ...)
+
 TODO: Enforce pip python styleguide to learn to write code that is consistent with one style.
+
 TODO: Display pieces that have been beaten.
+
 TODO: GUI-Widgets to control the chess game...
       1. Pause/Resume game
       2. Display who won the game with text.
@@ -50,7 +55,7 @@ def agent_make_move(board, agentWhite, agentBlack):
 board = Board()
 screen = pygame.display.set_mode((1280, 720), flags=pygame.RESIZABLE | pygame.DOUBLEBUF)
 
-agentWhite = HumanPlayer()
+agentWhite = RandomAgent(isWhite=True)
 agentBlack = GreedyAgent(isWhite=False)
 
 thread = threading.Thread(target=agent_make_move, args=[board, agentWhite, agentBlack])

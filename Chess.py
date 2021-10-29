@@ -17,7 +17,7 @@ import math
 
 class LogicalBoard:
     def __init__(self, board=None) -> None:
-        self.letterToColumn = {
+        self.__letterToColumn = {
             "a": 0,
             "b": 1,
             "c": 2,
@@ -28,7 +28,7 @@ class LogicalBoard:
             "h": 7
         }
 
-        self.columnToLetter = {
+        self.__columnToLetter = {
             0: "a",
             1: "b",
             2: "c",
@@ -61,21 +61,15 @@ class LogicalBoard:
             ]
         else:
             if len(board) != 8 or len(board[0]) != 8:
-                raise ValueError(
-                    "Given board has incorrect dimensions. Must be 8x8.")
+                raise ValueError("Given board has incorrect dimensions. Must be 8x8.")
             else:
                 self.board = board
-
-                # Make sure that the self.emptyPiece character is used.
-                """ for row in range(2, 6):
-                    for col in range(0, 8):
-                        self.board[row][col] = self.emptyPiece """
 
     def get_piece(self, pieceLoc):
         loc = self.traditional_to_array(pieceLoc)
         return self.get_piece_array(loc[0], loc[1])
 
-    def get_piece_array(self, row, col):
+    def __get_piece_array(self, row, col):
         return self.board[row][col]
 
     def get_all_white_pieces(self):
@@ -97,18 +91,18 @@ class LogicalBoard:
         return locations
         pass
 
-    def traditional_to_array(self, trad):
+    def __traditional_to_array(self, trad):
         '''Converts the traditional chess notation (e.g.: e8) to an array indexing notation (e.g.: e8 -> row=0, col=4)'''
         # 8 - i
         # 8 is the index of the last row on the board if you count 1 to 8.
-        col = self.letterToColumn[trad[0]]
+        col = self.__letterToColumn[trad[0]]
         row = 8 - int(trad[1])
         return (row, col)
 
-    def array_to_trad(self, rowAndCol):
-        return self.columnToLetter[rowAndCol[1]] + str(8 - rowAndCol[0])
+    def __array_to_trad(self, rowAndCol):
+        return self.__columnToLetter[rowAndCol[1]] + str(8 - rowAndCol[0])
 
-    def move_piece_array(self, fromLocArray, toLocArray):
+    def __move_piece_array(self, fromLocArray, toLocArray):
         if not self.validate_move(fromLocArray, toLocArray):
             raise ValueError("Given move '" + str(fromLocArray) +
                              " -> " + str(toLocArray) + "' is unvalid.")
@@ -124,7 +118,7 @@ class LogicalBoard:
 
         return str(fromLocArray) + " -> " + str(toLocArray)
 
-    def move_piece_trad(self, fromLoc, toLoc):
+    def move_piece(self, fromLoc, toLoc):
         fromLocArray = self.traditional_to_array(fromLoc)
         toLocArray = self.traditional_to_array(toLoc)
 
@@ -183,7 +177,7 @@ class LogicalBoard:
 
         return allPossibleMovesBlack
 
-    def get_possible_moves_rook(self, fromLoc):
+    def __get_possible_moves_rook(self, fromLoc):
         fromRow = fromLoc[0]
         fromCol = fromLoc[1]
         rookColor = self.board[fromLoc[0]][fromLoc[1]][0]
@@ -220,7 +214,7 @@ class LogicalBoard:
 
         return self.remove_not_on_board_and_friendly(possibleLocations, rookColor)
 
-    def get_possible_moves_king(self, fromLoc):
+    def __get_possible_moves_king(self, fromLoc):
         fromRow = fromLoc[0]
         fromCol = fromLoc[1]
         kingColor = self.board[fromLoc[0]][fromLoc[1]][0]
@@ -234,7 +228,7 @@ class LogicalBoard:
 
         return self.remove_not_on_board_and_friendly(possibleLocations, kingColor)
 
-    def get_possible_moves_bishop(self, fromLoc):
+    def __get_possible_moves_bishop(self, fromLoc):
         fromRow = fromLoc[0]
         fromCol = fromLoc[1]
         bishopColor = self.board[fromLoc[0]][fromLoc[1]][0]
@@ -292,11 +286,11 @@ class LogicalBoard:
 
         return self.remove_not_on_board_and_friendly(possibleLocations, bishopColor)
 
-    def get_possible_moves_queen(self, fromLoc):
+    def __get_possible_moves_queen(self, fromLoc):
         return self.get_possible_moves_bishop(fromLoc) + \
                self.get_possible_moves_rook(fromLoc)
 
-    def get_possible_moves_knight(self, fromLoc):
+    def __get_possible_moves_knight(self, fromLoc):
         fromRow = fromLoc[0]
         fromCol = fromLoc[1]
         knightColor = self.board[fromLoc[0]][fromLoc[1]][0]
@@ -317,7 +311,7 @@ class LogicalBoard:
 
         return self.remove_not_on_board_and_friendly(possibleLocations, knightColor)
 
-    def get_possible_moves_pawn(self, fromLoc):
+    def __get_possible_moves_pawn(self, fromLoc):
         if fromLoc[0] == 7 or fromLoc[0] == 0:
             return []
 
@@ -393,7 +387,7 @@ class LogicalBoard:
 
         return possibleLocations
 
-    def remove_not_on_board_and_friendly(self, possibleLocations, pieceColor):
+    def __remove_not_on_board_and_friendly(self, possibleLocations, pieceColor):
         '''From a list of (row, col) board coordinates this method removes the
            coordinates that are either outside of the board or contain a friendly
            piece relative to the given pieceColor.'''
