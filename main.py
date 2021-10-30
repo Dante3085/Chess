@@ -12,6 +12,8 @@ TODO: GUI-Widgets to control the chess game...
       2. Display who won the game with text.
       3. Display how many moves it took to win the game.
       4.
+
+TODO: A HumanPlayer should be able to visually place the pieces, instead of having to type in the console.
 """
 
 from Chess import Board
@@ -33,10 +35,10 @@ def checkMatchResult(matchResult, board):
 
 def agent_make_move(board, agentWhite, agentBlack):
     # input("Press Enter")
-    # time.sleep(.3)
+    time.sleep(1)
 
     # Make white move and check if game has ended.
-    whiteMove = agentWhite.make_move(board.logicalBoard)
+    whiteMove = agentWhite.make_move(board)
     print("w:" + str(whiteMove), end=" ")
 
     matchResultAfterWhiteMove = board.move_trad(whiteMove[0], whiteMove[1])
@@ -55,7 +57,7 @@ def agent_make_move(board, agentWhite, agentBlack):
 board = Board()
 screen = pygame.display.set_mode((1280, 720), flags=pygame.RESIZABLE | pygame.DOUBLEBUF)
 
-agentWhite = RandomAgent(isWhite=True)
+agentWhite = HumanPlayer()
 agentBlack = GreedyAgent(isWhite=False)
 
 thread = threading.Thread(target=agent_make_move, args=[board, agentWhite, agentBlack])

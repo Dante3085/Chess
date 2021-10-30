@@ -674,7 +674,6 @@ class BoardRenderer:
         '''Returns the side length every board's cell.'''
         return self.boardCells[0][0].size[0]
 
-
 class BoardInteractor:
     def __init__(self, boardRenderer):
         self.boardRenderer = boardRenderer
@@ -723,7 +722,7 @@ class BoardInteractor:
             if (
                     not self.boardRenderer.cell_is_empty(self.markedCellOnMove[0], self.markedCellOnMove[1]) and
                     markedCellOnMouseRelease in self.boardRenderer.logicalBoard.get_possible_moves(
-                self.markedCellOnMove)
+                    self.markedCellOnMove)
             ):
                 self.boardRenderer.logicalBoard.move_piece_array(self.markedCellOnMove, markedCellOnMouseRelease)
             else:
@@ -745,7 +744,6 @@ class BoardInteractor:
                     self.boardRenderer.markedCell = (row, col)
                     return
         self.boardRenderer.markedCell = (-1, -1)
-
 
 class Board:
     def __init__(self):
